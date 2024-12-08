@@ -12,6 +12,12 @@ public interface OrderService {
     Page<OrderResponse> getAllOrder(Pageable pageable);
     OrderResponse getOrderByOrderId(Integer orderId);
     Page<OrderResponse> getOrdersByUserId(Pageable pageable, Integer userId);
+    Page<OrderResponse> getOrdersByOrderStatusId(Pageable pageable, Integer orderStatusId, Integer userId);
     OrderResponse createOrder(OrderRequest orderRequest);
     OrderResponse updateOrder(Integer orderId, OrderRequest orderRequest);
+    OrderResponse updateOrderStatus(Integer orderId , Integer orderStatusId) ;
+    OrderResponse cancelOrder(Integer orderId);
+    OrderResponse completeOrder(Integer orderId);
+    OrderResponse returnRequest(Integer orderId);
+    OrderResponse acceptReturnRequest(Integer orderId , Boolean isAccept);
 }

@@ -21,6 +21,8 @@ public class CartResponse {
     private Integer cartId;
     private Double totalPrice;
     private Integer totalQuantity;
+    private Double discountAmount;
+    private CouponResponse coupon;
     private UserResponse user;
     private List<CartItemResponse> cartItems;
 

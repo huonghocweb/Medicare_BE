@@ -34,8 +34,8 @@ public class MomoService{
     public static final String URL_RETURN = "/thanks/momo" ;
 
 
-    public static final String PAYMENT_METHOD = "payWithATM" ;
-    // public static final String PAYMENT_METHOD = "captureWallet" ;
+    public static final String PAYMENT_METHOD = "captureWallet" ;
+    // public static final String PAYMENT_METHOD = "payWithATM" ;
 
     public String createPaymentRequest(Integer orderInfo, long amount, String baseUrlReturn,String username) {
         // Tạo chuỗi ngẫu nhiễn làm orderId

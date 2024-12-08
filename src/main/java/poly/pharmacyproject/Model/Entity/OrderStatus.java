@@ -1,10 +1,13 @@
 package poly.pharmacyproject.Model.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -20,4 +23,8 @@ public class OrderStatus {
 
     @Column(name="order_status_name")
     private String orderStatusName;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "orderStatus")
+    private List<OrderStatusAction> orderStatusActions;
 }

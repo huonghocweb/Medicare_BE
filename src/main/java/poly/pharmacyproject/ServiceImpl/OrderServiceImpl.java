@@ -4,10 +4,12 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import poly.pharmacyproject.Mapper.OrderMapper;
 import poly.pharmacyproject.Model.Entity.Order;
+import poly.pharmacyproject.Model.Enum.CommonOrderStatus;
 import poly.pharmacyproject.Model.Request.OrderRequest;
 import poly.pharmacyproject.Model.Response.OrderResponse;
 import poly.pharmacyproject.Repo.*;
@@ -17,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -37,6 +40,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Page<OrderResponse> getAllOrder(Pageable pageable) {
         Page<Order> orderPage = orderRepo.findAll(pageable);
+        if  (pageable.getPageNumber()>= (orderPage.getTotalPages() -1) ){
+            pageable = PageRequest.of(orderPage.getTotalPages()-1, pageable.getPageSize(), pageable.getSort());
+        }
         List<OrderResponse> orderResponses = orderPage.getContent().stream()
                 .map(orderMapper :: convertEnToRes)
                 .toList();
@@ -52,11 +58,26 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Page<OrderResponse> getOrdersByUserId(Pageable pageable, Integer userId) {
-        Page<Order> orderPage = orderRepo.getOrdersByUserId(pageable, userId);
+        Page<Order> orderPage  =  orderRepo.getOrdersByUserId(pageable, userId);
+        if  (pageable.getPageNumber()>= (orderPage.getTotalPages() -1) ){
+              pageable = PageRequest.of(orderPage.getTotalPages()-1, pageable.getPageSize(), pageable.getSort());
+        }
         List<OrderResponse> orderResponses =orderPage.getContent().stream()
                 .map(orderMapper :: convertEnToRes)
                 .toList();
         return new PageImpl<>(orderResponses,pageable, orderPage.getTotalElements());
+    }
+
+    @Override
+    public Page<OrderResponse> getOrdersByOrderStatusId(Pageable pageable, Integer orderStatusId, Integer userId) {
+        Page<Order> orderPage = orderRepo.getOrdersByOrderStatusId(pageable, orderStatusId, userId);
+        if  (pageable.getPageNumber()>= (orderPage.getTotalPages() -1) ){
+            pageable = PageRequest.of(orderPage.getTotalPages()-1, pageable.getPageSize(), pageable.getSort());
+        }
+        List<OrderResponse> orderResponses = orderPage.getContent().stream()
+                .map(orderMapper :: convertEnToRes)
+                .collect(Collectors.toList());
+        return new PageImpl<>(orderResponses,pageable,orderPage.getTotalElements());
     }
 
     @Override
@@ -101,4 +122,36 @@ public class OrderServiceImpl implements OrderService {
             return orderMapper.convertEnToRes(orderUpdated);
         }).orElseThrow(() -> new EntityNotFoundException("not found Order"));
     }
+
+    @Override
+    public OrderResponse updateOrderStatus(Integer orderId , Integer orderStatusId){
+        return orderRepo.findById(orderId).map(orderExists -> {
+            orderExists.setOrderStatus(orderStatusRepo.findById(orderStatusId)
+                    .orElseThrow(() -> new EntityNotFoundException("not found Order Status")));
+            return orderMapper.convertEnToRes(orderRepo.save(orderExists));
+        }).orElseThrow(() -> new EntityNotFoundException("not found Order"));
+    }
+
+    @Override
+    public OrderResponse cancelOrder(Integer orderId){
+         return this.updateOrderStatus(orderId, CommonOrderStatus.CANCEL.getId());
+    }
+
+    @Override
+    public OrderResponse completeOrder(Integer orderId){
+        return this.updateOrderStatus(orderId, CommonOrderStatus.COMPLETE.getId());
+    }
+
+    public OrderResponse returnRequest(Integer orderId){
+        return this.updateOrderStatus(orderId, CommonOrderStatus.RETURN_REQUEST.getId());
+    }
+
+    public OrderResponse acceptReturnRequest(Integer orderId , Boolean isAccept){
+            if(isAccept){
+                return  this.updateOrderStatus(orderId, CommonOrderStatus.RETURNED.getId());
+            }else{
+                return this.updateOrderStatus(orderId, CommonOrderStatus.COMPLETE.getId());
+            }
+    }
+
 }

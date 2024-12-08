@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import poly.pharmacyproject.Mapper.VariationMapper;
@@ -25,6 +26,9 @@ public class VariationServiceImpl implements VariationService {
     @Override
     public Page<VariationResponse> getAllVariation(Pageable pageable) {
         Page<Variation> variationPages =variationRepo.findAll(pageable);
+        if  (pageable.getPageNumber()>= (variationPages.getTotalPages() -1) ){
+            pageable = PageRequest.of(variationPages.getTotalPages()-1, pageable.getPageSize(), pageable.getSort());
+        }
         List<VariationResponse> variationResponses = variationPages.getContent().stream()
                 .map(variationMapper :: convertEnToRes)
                 .collect(Collectors.toList());

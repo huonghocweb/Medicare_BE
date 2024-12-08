@@ -38,6 +38,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<UserResponse> getAllUser(Pageable pageable) {
     Page<User> usersPage = userRepo.findAll(pageable);
+        if  (pageable.getPageNumber()>= (usersPage.getTotalPages() -1) ){
+            pageable = PageRequest.of(usersPage.getTotalPages()-1, pageable.getPageSize(), pageable.getSort());
+        }
     List<UserResponse> userResponses = usersPage.getContent().stream()
             .map(userMapper::convertEnToRes)
             .collect(Collectors.toList());
@@ -93,7 +96,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<UserResponse> getUserByUsername(String username) {
+    public Optional<UserResponse> getUserByUserName(String username) {
         User user = userRepo.findUserByUserName(username)
                 .orElseThrow(() -> new EntityNotFoundException("not found User"));
         return Optional.of(userMapper.convertEnToRes(user));

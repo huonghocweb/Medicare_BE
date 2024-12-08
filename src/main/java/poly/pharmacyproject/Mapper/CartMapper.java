@@ -5,7 +5,10 @@ import poly.pharmacyproject.Model.Entity.Cart;
 import poly.pharmacyproject.Model.Request.CartRequest;
 import poly.pharmacyproject.Model.Response.CartResponse;
 
-@Mapper(componentModel = "spring", uses = CartItemMapper.class)
+@Mapper(componentModel = "spring", uses = {
+        CartItemMapper.class,
+        CouponMapper.class
+})
 public interface CartMapper {
 
     CartResponse convertEnToRes(Cart cart);

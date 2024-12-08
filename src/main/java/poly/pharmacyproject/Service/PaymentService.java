@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 public interface PaymentService {
 
-     OrderResponse createOrder(Integer userId, Integer couponId , Double totalPrice , Integer paymentMethodId , String deliveryAddress , Integer shipFee);
+     OrderResponse createOrder(Integer userId, Integer leadTime , Double totalPrice , Integer paymentMethodId , String deliveryAddress , Integer shipFee);
      List<OrderDetailsResponse> createOrderDetails(Integer orderId, Integer userId);
      OrderResponse updateOrderPaymentStatus(Integer orderId , Integer orderStatusId);
      void sendMail(OrderResponse  order) throws IOException, WriterException, MessagingException;

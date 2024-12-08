@@ -6,10 +6,14 @@ import org.springframework.stereotype.Service;
 import poly.pharmacyproject.Model.Request.DeliveryAddressRequest;
 import poly.pharmacyproject.Model.Response.DeliveryAddressResponse;
 
+import java.util.Optional;
+
 @Service
 public interface DeliveryAddressService {
-    Page<DeliveryAddressResponse> getAllDeliveryAddressByUserId(Integer userId, Pageable pageable);
-    DeliveryAddressResponse getDeliveryAddressById(Integer deliveryAddressId);
+    Page<DeliveryAddressResponse> getAllDeliveryAddress(Pageable pageable);
+    Page<DeliveryAddressResponse> getDeliveryAddressByUserId(Integer userId, Pageable pageable);
+    Optional<DeliveryAddressResponse> getDeliveryAddressById(Integer deliveryAddressId);
     DeliveryAddressResponse createDeliveryAddress(DeliveryAddressRequest deliveryAddressRequest);
-    DeliveryAddressResponse updateDeliveryAddress(Integer deliveryAddressId, DeliveryAddressRequest deliveryAddressRequest);
+    Optional<DeliveryAddressResponse> updateDeliveryAddress(Integer deliveryAddressId, DeliveryAddressRequest deliveryAddressRequest);
+    Optional<DeliveryAddressResponse> removerDeliveryAddress(Integer deliveryAddressId);
 }

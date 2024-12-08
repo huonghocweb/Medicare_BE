@@ -1,10 +1,11 @@
 package poly.pharmacyproject.Model.Response;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -13,4 +14,5 @@ import lombok.NoArgsConstructor;
 public class OrderStatusResponse {
     private Integer orderStatusId;
     private String orderStatusName;
+    private List<OrderStatusActionResponse> orderStatusActions;
 }

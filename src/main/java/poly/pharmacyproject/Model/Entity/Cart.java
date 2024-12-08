@@ -27,6 +27,9 @@ public class Cart {
     @Column(name ="total_quantity")
     private Integer totalQuantity;
 
+    @Column(name="discount_amount")
+    private Double discountAmount;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name="user_id")
@@ -36,5 +39,9 @@ public class Cart {
     @OneToMany(mappedBy = "cart")
     private List<CartItem> cartItems;
 
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name="coupon_id")
+    private Coupon coupon;
 
 }

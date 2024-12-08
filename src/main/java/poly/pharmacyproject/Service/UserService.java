@@ -18,5 +18,5 @@ public interface UserService {
     UserResponse createUser(UserRequest userRequest);
     Optional<UserResponse> updateUser(UserRequest userRequest, Integer id);
     Optional<Void> deleteUserById(Integer id);
-    Optional<UserResponse> getUserByUsername(String username);
+    Optional<UserResponse> getUserByUserName(String username);
 }

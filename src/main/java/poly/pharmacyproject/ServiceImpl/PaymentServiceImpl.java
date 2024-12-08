@@ -16,6 +16,7 @@ import poly.pharmacyproject.Service.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,13 +45,18 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private VariationRepo variationRepo;
 
-    public OrderResponse createOrder(Integer userId, Integer couponId , Double totalPrice , Integer paymentMethodId , String deliveryAddress , Integer shipFee){
+    public OrderResponse createOrder(Integer userId, Integer leadTime , Double totalPrice , Integer paymentMethodId , String deliveryAddress , Integer shipFee){
         OrderRequest orderRequest = new OrderRequest();
         Cart cart = cartRepo.getCartByUserId(userId);
         User user = userRepo.findById(userId)
                         .orElseThrow(() -> new EntityNotFoundException("Not found User"));
         orderRequest.setOrderStatusId(1);
-        orderRequest.setCouponId(couponId);
+        if (cart.getCoupon() != null){
+            orderRequest.setCouponId(cart.getCoupon().getCouponId());
+        }
+        System.out.println(leadTime);
+        orderRequest.setLeadTime(leadTime);
+        orderRequest.setEstimatedDeliveryDateTime(LocalDateTime.now().plusHours(leadTime));
         orderRequest.setTotalPrice(totalPrice);
         orderRequest.setPaymentMethodId(paymentMethodId);
         orderRequest.setDeliveryAddress(deliveryAddress);
@@ -129,5 +135,7 @@ public class PaymentServiceImpl implements PaymentService {
             System.out.println("UPdated Quatity Stock");
             variationRepo.save(variation);
         });
+        if(order.getCoupon() != null){
+        }
     }
 }

@@ -47,15 +47,18 @@ public class PaymentApi {
             @PathVariable("userId") Integer userId,
             @PathVariable( "paymentMethodId" ) Integer paymentMethodId,
             @RequestPart(value = "totalPrice", required = false) Integer totalPrice,
-            @RequestPart(value = "couponId", required = false) Integer couponId,
             @RequestPart(value = "deliveryAddress",required = false) String deliveryAddress,
             @RequestPart(value = "shipFee" , required = false) Integer shipFee,
+            @RequestPart(value = "leadTime" , required = false) Integer leadTime,
             @RequestPart(value = "cartItems" , required = false) List<Map<String, Object>> cartItems,
             @RequestPart(value = "baseReturnUrl",required = false) String baseReturnUrl
     ) throws PayPalRESTException, UnsupportedEncodingException, StripeException {
         Map<String,Object> result = new HashMap<>();
-      //  System.out.println("PaymentMethod Id " + paymentMethodId + "TotalPrice : " + totalPrice + "URl : " + baseReturnUrl);
-        OrderResponse order = paymentService.createOrder(userId, couponId, Double.valueOf(totalPrice), paymentMethodId, deliveryAddress,shipFee);
+        System.out.println("Delivery Address : " + deliveryAddress);
+        System.out.println("SHip FEE : " + shipFee);
+        System.out.println("LeadTime : " + leadTime);
+       //System.out.println("PaymentMethod Id " + paymentMethodId + "TotalPrice : " + totalPrice + "URl : " + baseReturnUrl);
+        OrderResponse order = paymentService.createOrder(userId, leadTime, Double.valueOf(totalPrice), paymentMethodId, deliveryAddress,shipFee);
         List<OrderDetailsResponse> orderDetailsList = paymentService.createOrderDetails(order.getOrderId(), userId);
         String url = "";
         if(paymentMethodId ==1 ){
@@ -65,11 +68,11 @@ public class PaymentApi {
             System.out.println("payment By Pay Pal : ");
             url = payPalService.createPaymentUrl(totalPrice, order.getOrderId(), baseReturnUrl,  baseReturnUrl);
         }else if(paymentMethodId ==3){
-            System.out.println("payment By Stripe : ");
-            url =  stripeService.createPaymentUrlByStripe(order.getOrderId(), totalPrice, baseReturnUrl, cartItems);
-        }else if(paymentMethodId ==4 ){
             System.out.println("payment By Momo: ");
             url = momoService.createUrlPaymentMomo(order.getOrderId(), totalPrice, baseReturnUrl, order.getUser().getUserName() );
+        }else if(paymentMethodId ==4 ){
+            System.out.println("payment By Stripe : ");
+            url =  stripeService.createPaymentUrlByStripe(order.getOrderId(), totalPrice, baseReturnUrl, cartItems);
         }
         System.out.println("URL Pay  : " + url);
         try {
@@ -84,6 +87,10 @@ public class PaymentApi {
         return ResponseEntity.ok(result);
     }
 
+    @PostMapping("/ipn")
+    public void checkPaymentMomoByIpn(Map<String,String> ipnData){
+        System.out.println("IPN : " + ipnData);
+    }
 
     @GetMapping("/getPaymentInfo/{paymentMethod}")
     @PreAuthorize("hasAnyRole('ADMIN','STAFF', 'USER')")

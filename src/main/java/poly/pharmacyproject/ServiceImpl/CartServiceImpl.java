@@ -9,14 +9,12 @@ import poly.pharmacyproject.Mapper.CartMapper;
 import poly.pharmacyproject.Mapper.VariationMapper;
 import poly.pharmacyproject.Model.Entity.Cart;
 import poly.pharmacyproject.Model.Entity.CartItem;
+import poly.pharmacyproject.Model.Entity.Coupon;
 import poly.pharmacyproject.Model.Entity.Variation;
 import poly.pharmacyproject.Model.Response.CartItemResponse;
 import poly.pharmacyproject.Model.Response.CartResponse;
 import poly.pharmacyproject.Model.Response.VariationResponse;
-import poly.pharmacyproject.Repo.CartItemRepo;
-import poly.pharmacyproject.Repo.CartRepo;
-import poly.pharmacyproject.Repo.UserRepo;
-import poly.pharmacyproject.Repo.VariationRepo;
+import poly.pharmacyproject.Repo.*;
 import poly.pharmacyproject.Service.CartService;
 import poly.pharmacyproject.Service.VariationService;
 
@@ -42,6 +40,8 @@ public class CartServiceImpl implements CartService {
     private VariationRepo variationRepo;
     @Autowired
     private VariationMapper variationMapper;
+    @Autowired
+    private CouponRepo couponRepo;
 
     @Override
     public CartResponse getCartByUserId(Integer userId) {
@@ -111,5 +111,34 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartItemResponse removeCartItem(Integer cartItemId) {
         return null;
+    }
+
+    @Override
+    public CartResponse addCouponToCart(Integer userId, String code){
+        Cart cart = cartRepo.getCartByUserId(userId);
+        Coupon coupon = couponRepo.findCouponByCode(code)
+                .orElseThrow(() -> new EntityNotFoundException("Not found Coupon"));
+        cart.setCoupon(coupon);
+        System.out.println( "Discount Percent: " + coupon.getDiscountPercent()/100);
+        System.out.println("TOtal Price " + cart.getTotalPrice());
+        Double discountAmount = ((coupon.getDiscountPercent() / 100) *cart.getTotalPrice());
+        System.out.println(discountAmount);
+        if (discountAmount > coupon.getMaxDiscountAmount()){
+            discountAmount = coupon.getMaxDiscountAmount();
+        }
+        cart.setDiscountAmount(discountAmount);
+        return cartMapper.convertEnToRes(cartRepo.save(cart));
+    }
+
+    @Override
+    public CartResponse removerCouponToCart(Integer userId, String code){
+        Cart cart = cartRepo.getCartByUserId(userId);
+        Coupon coupon = couponRepo.findCouponByCode(code)
+                .orElseThrow(() -> new EntityNotFoundException("Not found Coupon"));
+        if(coupon != null){
+            cart.setCoupon(null);
+            cart.setDiscountAmount(0.0);
+        }
+        return cartMapper.convertEnToRes(cartRepo.save(cart));
     }
 }

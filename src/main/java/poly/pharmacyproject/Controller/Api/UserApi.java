@@ -74,6 +74,24 @@ public class UserApi {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/getByUserName/{userName}")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','USER')")
+    public ResponseEntity<Object> getUserByUserName(
+            @PathVariable("userName") String userName
+    ){
+        Map<String,Object> result = new HashMap<>();
+        try {
+            result.put("success", "true");
+            result.put("message", "Get User By userName");
+            result.put("data",userService.getUserByUserName(userName));
+        }catch (Exception e){
+            result.put("success", "false");
+            result.put("message", e.getMessage());
+            result.put("data",null);
+        }
+        return ResponseEntity.ok(result);
+    }
+
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")

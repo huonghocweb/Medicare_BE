@@ -49,4 +49,12 @@ public class Coupon {
     @Column(name="image_url")
     private String imageUrl;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "coupon")
+    private List<Cart> carts;
+
+    @JsonIgnore
+    @OneToMany(mappedBy ="coupon")
+    private List<Order> orders;
+
 }

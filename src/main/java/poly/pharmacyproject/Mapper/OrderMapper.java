@@ -20,7 +20,8 @@ import java.util.stream.Collectors;
         CouponMapper.class,
         DeliveryAddressMapper.class,
         PaymentMethodMapper.class,
-        UserMapper.class
+        UserMapper.class,
+        OrderStatusActionMapper.class
 })
 public interface OrderMapper {
     OrderResponse convertEnToRes(Order order);

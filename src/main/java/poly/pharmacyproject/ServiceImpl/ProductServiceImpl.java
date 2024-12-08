@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import poly.pharmacyproject.Mapper.ProductMapper;
@@ -31,6 +32,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Page<ProductResponse> getAllProduct(Pageable pageable) {
         Page<Product> productPage = productRepo.findAll(pageable);
+        if  (pageable.getPageNumber()>= (productPage.getTotalPages() -1) ){
+            pageable = PageRequest.of(productPage.getTotalPages()-1, pageable.getPageSize(), pageable.getSort());
+        }
         List<ProductResponse> productResponses = productPage.getContent().stream()
                 .map(productMapper :: convertEnToRes)
                 .collect(Collectors.toList());

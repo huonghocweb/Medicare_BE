@@ -13,4 +13,11 @@ public interface OrderRepo extends JpaRepository<Order, Integer> {
     @Query("SELECT o FROM Order o JOIN o.user u " +
             " WHERE u.userId =:userId ")
     Page<Order> getOrdersByUserId(Pageable pageable, @Param("userId") Integer userId);
+
+
+    @Query("SELECT o FROM Order o JOIN o.orderStatus osta JOIN o.user u  " +
+            " WHERE osta.orderStatusId = :orderStatusId AND u.userId= :userId")
+    Page<Order> getOrdersByOrderStatusId(Pageable pageable,
+                                         @Param("orderStatusId") Integer orderStatusId,
+                                         @Param("userId") Integer userId);
 }

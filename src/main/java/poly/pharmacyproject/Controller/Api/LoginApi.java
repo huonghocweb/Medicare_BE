@@ -2,6 +2,7 @@ package poly.pharmacyproject.Controller.Api;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,6 +14,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 import poly.pharmacyproject.Config.OAuth2LoginSuccessHandler;
 import poly.pharmacyproject.Model.Request.AuthRequest;
+import poly.pharmacyproject.Service.UserService;
 import poly.pharmacyproject.Utils.JwtUtils;
 
 import java.util.HashMap;
@@ -28,6 +30,8 @@ public class LoginApi {
     private UserDetailsService userDetailsService;
     @Autowired
     private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/login/oauth2/success")
         public ResponseEntity<?> loginOauth2(
@@ -76,8 +80,8 @@ public class LoginApi {
     public ResponseEntity<Object > authenticate(@RequestBody AuthRequest authRequest) throws Exception {
         //authenticationManager.authenticate nhận vào đối tướng chứa thông tin người dùng (ở đây là UsernamePasswordAuthenticationToken)
         // sau đó dùng AuthenticationProvider để xác thực thông tin với database thông qua UserDetailServiceImpl mà bạn cấu hình
-//        System.out.println(authRequest.getUsername() + authRequest.getPassword());
-//        System.out.println(userService.getUserByUsername(authRequest.getUsername()));
+      //  System.out.println(authRequest.getUserName() + authRequest.getPassword());
+    //    System.out.println(userService.getUserByUserName(authRequest.getUserName()).get().getUserName());
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword())
@@ -89,6 +93,7 @@ public class LoginApi {
         final UserDetails userDetails= userDetailsService.loadUserByUsername(authRequest.getUserName());
         // Lúc này dùng userDetails có các thông tin ng dùng vào utils để tạp token
         final  String jwtToken= jwtUtils.generateToken(userDetails);
+      //  System.out.println("TOKEN : " +jwtToken);
         Map<String,Object> result= new HashMap<>();
         try {
             result.put("success",true);

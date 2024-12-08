@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CouponRequest {
-    private Integer couponId;
     private String code;
     private String description;
     private Double discountPercent;
